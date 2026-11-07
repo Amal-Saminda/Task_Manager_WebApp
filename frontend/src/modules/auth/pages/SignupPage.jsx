@@ -2,7 +2,7 @@ import SignupForm from '../components/SignupForm'
 
 export default function SignupPage({ onGoLogin }) {
   const handleSignup = (data) => {
-    console.log('signup', data) // TODO: connect API later
+    console.log('signup', data) // 
   }
 
   return (

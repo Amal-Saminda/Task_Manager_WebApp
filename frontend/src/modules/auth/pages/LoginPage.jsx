@@ -1,10 +1,15 @@
+
 import LoginForm from '../components/LoginForm'
 import womanImage from '../../../assets/login-woman.jpg'
 
+
 export default function LoginPage({ onGoSignup }) {
   const handleLogin = (data) => {
-    console.log('login', data) // TODO: connect API later
-  }
+    console.log('login', data) 
+    
+       
+    }// TODO: connect API later
+  
 
   return (
     <main
