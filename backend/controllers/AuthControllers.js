@@ -10,7 +10,7 @@ const generateToken = (userId) => {
 
 const registerUser = async(req,res) => {
   try{
-    const{name , email , password , profileImageUrl ,adminInviteToken}=req.body;
+    const{fullName , email , password , profileImageUrl ,adminInviteToken}=req.body;
 
     //check if user already exists
     const userExists = await User.findOne({email});
@@ -34,7 +34,7 @@ const registerUser = async(req,res) => {
 
     //create new user 
     const user = await User.create({
-      name,
+      name: fullName,
       email,password: hashedPassword,
       profileImageUrl,
       role
@@ -62,12 +62,12 @@ const loginUser = async(req,res) => {
 
       const user = await User.findOne({email});
       if(!user){
-        return res.json(401).json({message: "Invalid email or password"});
+        return res.status(401).json({message: "Invalid email or password"});
       }
 
       const isMatch = await bcrypt.compare(password , user.password);
       if(!isMatch) {
-        return res.json(401).json({message: "Inavalid email or password"})
+        return res.status(401).json({message: "Inavalid email or password"})
       } 
 
       res.json({
