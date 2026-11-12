@@ -14,22 +14,30 @@ const axiosInstance = axios.create({
 
 //Req Interceptor
 
+
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem(TOKEN_KEY);
-    if(accessToken){
+    let storedSession = null;
+
+    try {
+      storedSession = JSON.parse(
+        localStorage.getItem(TOKEN_KEY)
+      );
+    } catch {
+      storedSession = null;
+    }
+
+    const accessToken = storedSession?.token;
+
+    if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return config;
   },
+  (error) => Promise.reject(error)
+);
 
-  (error) => {
- 
-    return Promise.reject(error);
- 
-  }
-  )
 
   //Res Interceptor
 axiosInstance.interceptors.response.use(
@@ -47,9 +55,9 @@ axiosInstance.interceptors.response.use(
       }else if(error.response.status === 500){
         console.error("Server error. Please try again later");
       }
-    }else if(error.response.status === "ENCONNABORTED") {
-      console.log("Request timeout , Please try again")
-    }
+    } else if (error.code === "ECONNABORTED") {
+  console.log("Request timeout. Please try again.");
+}
 
     return Promise.reject(error);
   }

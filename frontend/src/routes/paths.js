@@ -1,3 +1,4 @@
+
 export const PATHS = {
   LOGIN: '/login',
   SIGN_UP: '/SingUp',
@@ -10,5 +11,13 @@ export const ROLES = {
   USER: 'user',
 };
 
-export const getDashboardPath = (role) =>
-  role === ROLES.ADMIN ? PATHS.ADMIN_DASHBOARD : PATHS.USER_DASHBOARD;
+export const normalizeRole = (role) =>
+  String(role ?? '').toLowerCase() === ROLES.ADMIN
+    ? ROLES.ADMIN
+    : ROLES.USER;
+
+export const getDashboardPath = (role) => {
+  return normalizeRole(role) === ROLES.ADMIN
+    ? PATHS.ADMIN_DASHBOARD
+    : PATHS.USER_DASHBOARD;
+};

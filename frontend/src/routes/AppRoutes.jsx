@@ -1,13 +1,12 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import Login from '../modules/auth/pages/Auth/Login.jsx';
-import SingUp from '../modules/auth/pages/Auth/SingUp.jsx';
+import { Login, SingUp } from '../modules/auth';
+import { Dashboard } from '../modules/admin';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 import { PATHS, ROLES } from './paths';
 
-// TODO: adjust these two imports to where your dashboards actually live
-import Dashboard from '../modules/auth/pages/admin/Dashboard.jsx';
-import UserDashboard from '../modules/auth/pages/user/UserDashboard.jsx';
+// TODO: adjust this import to where your user dashboard actually lives
+// import UserDashboard from '../pages/user/UserDashboard';
 
 export default function AppRoutes() {
   return (
@@ -15,7 +14,7 @@ export default function AppRoutes() {
       {/* Public (redirects to dashboard when already logged in) */}
       <Route element={<PublicRoute />}>
         <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<SingUp />} />
+        <Route path='/SingUp' element={<SingUp />} />
       </Route>
 
       {/* Admin only */}
@@ -24,9 +23,9 @@ export default function AppRoutes() {
       </Route>
 
       {/* Normal users only */}
-      <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
+      {/* <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
         <Route path='/user/dashboard' element={<UserDashboard />} />
-      </Route>
+      </Route> */}
 
       <Route path='/' element={<Navigate to={PATHS.LOGIN} replace />} />
       <Route path='*' element={<Navigate to={PATHS.LOGIN} replace />} />

@@ -16,12 +16,27 @@ const readStoredSession = () => {
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(readStoredSession);
 
-  const saveSession = useCallback((data) => {
-    const next = { token: data.accessToken, user: data.user };
-    localStorage.setItem(TOKEN_KEY, JSON.stringify(next));
-    setSession(next);
-    return next.user;
-  }, []);
+
+const saveSession = useCallback((data) => {
+  const user = {
+    _id: data._id,
+    name: data.name,
+    email: data.email,
+    role: data.role,
+    profileImageUrl: data.profileImageUrl,
+  };
+
+  const next = {
+    token: data.token,
+    user,
+  };
+
+  localStorage.setItem(TOKEN_KEY, JSON.stringify(next));
+  setSession(next);
+
+  return user;
+}, []);
+
 
   const login = useCallback(
     async (credentials) => saveSession(await authService.login(credentials)),

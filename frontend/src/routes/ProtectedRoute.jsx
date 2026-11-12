@@ -11,6 +11,8 @@ export default function ProtectedRoute({ allowedRoles }) {
     return <Navigate to={PATHS.LOGIN} replace state={{ from: location }} />;
   }
 
+  
+
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
     return <Navigate to={getDashboardPath(user?.role)} replace />;
   }
