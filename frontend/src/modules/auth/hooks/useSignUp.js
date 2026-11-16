@@ -42,14 +42,14 @@ export default function useSignUp() {
     try {
       const data = await register({
         ...values,
-        name: values.fullName .trim(),
+        fullName: values.fullName.trim(),
         email: values.email.trim(),
         inviteToken: values.inviteToken.trim(),
       });
 
       // API returned a token -> already signed in. Otherwise go to login.
-      if (data?.accessToken && data?.user) {
-        navigate(getDashboardPath(data.user.role), { replace: true });
+      if (data?.token) {
+        navigate(getDashboardPath(data.role), { replace: true });
       } else {
         navigate(PATHS.LOGIN, { replace: true, state: { registered: true } });
       }

@@ -1,13 +1,27 @@
 import { useState } from 'react';
 import { CheckCheck, Menu, X } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { useNavigate } from 'react-router-dom';
+import { PATHS } from '../../../routes/paths';
+
+
+
+const TAB_ROUTES = {
+  dashboard: PATHS.ADMIN_DASHBOARD,
+  'create-task': PATHS.ADMIN_CREATE_TASK,
+  'team-members': PATHS.ADMIN_TEAM_MEMBERS,
+  'manage-tasks': PATHS.ADMIN_MANAGE_TASK,
+};
+
 
 export default function AdminLayout({ activeKey = 'dashboard', onNavigate, children }) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleNavigate = (key) => {
-    setOpen(false);
-    onNavigate?.(key);
+const handleNavigate = (key) => {
+  setOpen(false);
+  if (TAB_ROUTES[key]) navigate(TAB_ROUTES[key]);  
+  onNavigate?.(key);
   };
 
   return (

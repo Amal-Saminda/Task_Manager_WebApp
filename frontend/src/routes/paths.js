@@ -3,6 +3,9 @@ export const PATHS = {
   LOGIN: '/login',
   SIGN_UP: '/SingUp',
   ADMIN_DASHBOARD: '/admin/dashboard',
+  ADMIN_CREATE_TASK: '/admin/create-task',
+  ADMIN_TEAM_MEMBERS: '/admin/team-members',
+  ADMIN_MANAGE_TASK: '/admin/manage-tasks',
   USER_DASHBOARD: '/user/dashboard',
 };
 

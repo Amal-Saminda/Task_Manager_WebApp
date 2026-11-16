@@ -1,26 +1,82 @@
 // Pure SVG donut chart — no chart library needed.
+import { useState , useEffect } from "react";
+import axiosInstance from "../../../shared/api/axiosInstance";
+import { API_PATHS } from "../../../shared/api/apipaths";
+
+
+
 const RADIUS = 70;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-export default function TaskDistributionChart({ pending, inProgress, completed }) {
+export default function TaskDistributionChart() {
+
+  const [dashboardData, setDashboardData] = useState([]);
+
+  const getDashboardData = async () => {
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.TASKS.GET_ALL_TASKS
+      );
+
+      setDashboardData(
+        Array.isArray(response.data)
+          ? response.data
+          : response.data.tasks || []
+      );
+
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  useEffect(() => {
+    getDashboardData();
+  }, []);
+
+  // Calculate task counts
+  const pending = dashboardData.filter(
+    (task) => task.status === "pending" || task.status === "Pending"
+  ).length;
+
+  const inProgress = dashboardData.filter(
+    (task) => task.status === "In Progress"
+  ).length;
+
+  const completed = dashboardData.filter(
+    (task) => task.status === "Completed"
+  ).length;
+
   const segments = [
-    { label: 'Pending', value: pending, color: '#8b5cf6' },
-    { label: 'In Progress', value: inProgress, color: '#06b6d4' },
-    { label: 'Completed', value: completed, color: '#84cc16' },
+    { label: "Pending", value: pending, color: "#8b5cf6" },
+    { label: "In Progress", value: inProgress, color: "#06b6d4" },
+    { label: "Completed", value: completed, color: "#84cc16" },
   ];
-  const total = segments.reduce((sum, s) => sum + s.value, 0) || 1;
+
+  const total = segments.reduce(
+    (sum, s) => sum + s.value, 0
+  ) || 1;
 
   let offset = 0;
+
   const arcs = segments.map((s) => {
     const length = (s.value / total) * CIRCUMFERENCE;
+
     const arc = { ...s, length, offset };
+
     offset += length;
+
     return arc;
   });
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="0 0 200 200" className="h-56 w-56 -rotate-90" role="img" aria-label="Task distribution">
+
+      <svg
+        viewBox="0 0 200 200"
+        className="h-56 w-56 -rotate-90"
+        role="img"
+        aria-label="Task distribution"
+      >
         {arcs.map((a) => (
           <circle
             key={a.label}
@@ -37,12 +93,20 @@ export default function TaskDistributionChart({ pending, inProgress, completed }
       </svg>
 
       <ul className="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
+
         {segments.map((s) => (
           <li key={s.label} className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-            {s.label}
+
+            <span
+              className="h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: s.color }}
+            />
+
+            {s.label} ({s.value})
+
           </li>
         ))}
+
       </ul>
     </div>
   );

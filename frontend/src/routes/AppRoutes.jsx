@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Login, SingUp } from '../modules/auth';
-import { Dashboard } from '../modules/admin';
+import { Dashboard , CreateTask , TeamMembers , ManageTask } from '../modules/admin';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 import { PATHS, ROLES } from './paths';
@@ -20,6 +20,9 @@ export default function AppRoutes() {
       {/* Admin only */}
       <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
         <Route path='/admin/dashboard' element={<Dashboard />} />
+        <Route path='/admin/create-task' element={<CreateTask />} />
+        <Route path='/admin/team-members' element={<TeamMembers />} />
+        <Route path='/admin/manage-tasks' element={<ManageTask />} />
       </Route>
 
       {/* Normal users only */}

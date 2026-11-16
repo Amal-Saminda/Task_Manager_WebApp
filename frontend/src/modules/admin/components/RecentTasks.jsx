@@ -1,4 +1,7 @@
 import { ArrowRight } from 'lucide-react';
+import { useState , useEffect} from 'react';
+import axiosInstance from '../../../shared/api/axiosInstance';
+import { API_PATHS } from '../../../shared/api/apipaths';
 
 const STATUS_STYLES = {
   Pending: 'bg-violet-50 text-violet-600',
@@ -17,6 +20,33 @@ const Badge = ({ className, children }) => (
 );
 
 export default function RecentTasks({ tasks }) {
+
+  const [dashboardData , setDashboardData] = useState([]);
+
+  const getDashboardData = async () => {
+  try {
+    const response = await axiosInstance.get(
+      API_PATHS.TASKS.GET_ALL_TASKS,
+      
+    );
+
+    setDashboardData(
+      Array.isArray(response.data)
+        ? response.data
+        : response.data.tasks || []
+    );
+      
+    }
+
+   catch (error) {
+    console.error("Error fetching users", error)    
+  };
+}
+useEffect(() => {
+  getDashboardData();
+
+  return () => {};
+}, []);
   return (
     <section className="rounded-2xl bg-white p-5 shadow-sm sm:p-6">
       <div className="mb-4 flex items-center justify-between">
@@ -40,7 +70,7 @@ export default function RecentTasks({ tasks }) {
             </tr>
           </thead>
           <tbody>
-            {tasks.map((t) => (
+            {dashboardData.map((t) => (
               <tr key={t.id} className="border-b border-slate-50 last:border-0">
                 <td className="py-3.5 pr-4 font-medium text-slate-800">{t.title}</td>
                 <td className="py-3.5 pr-4">

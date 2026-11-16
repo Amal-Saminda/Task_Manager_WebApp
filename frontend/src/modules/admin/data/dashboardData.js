@@ -1,8 +1,8 @@
 // STATIC placeholder data — UI only. Replace with API data later.
 
 export const adminProfile = {
-  name: 'Mike',
-  email: 'mike@taskbuddy.com',
+  name: 'Amal',
+  email: 'amal@taskbuddy.com',
   role: 'Admin',
   avatar: '', // empty -> initials fallback
 };
@@ -15,9 +15,8 @@ export const tasks = [
   { id: 5, title: 'Prepare sprint review', status: 'In Progress', priority: 'Medium', dueDate: '2026-11-13' },
 ];
 
-// Summary numbers shown on the cards / charts (static)
 export const summary = {
-  total: 18,
+  total: 18 ,
   pending: 11,
   inProgress: 5,
   completed: 2,
@@ -28,3 +27,26 @@ export const priorityCounts = [
   { label: 'Medium', value: 6 },
   { label: 'High', value: 7 },
 ];
+
+
+export const TaskListTable = () => {
+
+  const getStatusbadgeColor = (status) => {
+    switch(status) {
+      case 'Pending' :
+      case 'In Progress' :
+      case 'Completed':
+    }
+  };
+
+  const getPriorityBadge = (priority) => {
+    switch(priority) {
+      case 'Low':
+      case 'High':
+      case 'Medium':
+    }
+  }
+
+}
+
+

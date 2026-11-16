@@ -10,7 +10,18 @@ const generateToken = (userId) => {
 
 const registerUser = async(req,res) => {
   try{
-    const{fullName , email , password , profileImageUrl ,adminInviteToken}=req.body;
+    // Accept both naming styles so the frontend field names can't silently drop data
+    const fullName = req.body.fullName || req.body.name;
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const password = req.body.password;
+    const profileImageUrl = req.body.profileImageUrl || null;
+    const adminInviteToken = String(
+      req.body.adminInviteToken || req.body.inviteToken || ""
+    ).trim();
+
+    if(!fullName || !email || !password){
+      return res.status(400).json({message: "Name, email and password are required"});
+    }
 
     //check if user already exists
     const userExists = await User.findOne({email});
@@ -18,12 +29,18 @@ const registerUser = async(req,res) => {
       return res.status(400).json({message: "User already exists"});
     }
 
-    //Determine user role: Admin if correct token if provided
-
+    // Role rule:
+    //   no token            -> member (normal user)
+    //   correct token       -> admin
+    //   wrong token         -> rejected (so nobody becomes a member by typo)
     let role = "member";
-    if(
-      adminInviteToken && adminInviteToken == process.env.ADMIN_INVITE_TOKEN
-    ) {
+    if(adminInviteToken){
+      if(
+        !process.env.ADMIN_INVITE_TOKEN ||
+        adminInviteToken !== process.env.ADMIN_INVITE_TOKEN
+      ){
+        return res.status(400).json({message: "Invalid admin invite token"});
+      }
       role = "admin";
     }
 
@@ -31,11 +48,11 @@ const registerUser = async(req,res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password,salt);
 
-
-    //create new user 
+    //create new user
     const user = await User.create({
-      name: fullName,
-      email,password: hashedPassword,
+      name: fullName.trim(),
+      email,
+      password: hashedPassword,
       profileImageUrl,
       role
     });
@@ -58,7 +75,8 @@ const registerUser = async(req,res) => {
 const loginUser = async(req,res) => {
     try{
 
-      const {email , password} = req.body;
+      const email = String(req.body.email || "").trim().toLowerCase();
+      const {password} = req.body;
 
       const user = await User.findOne({email});
       if(!user){
@@ -67,7 +85,7 @@ const loginUser = async(req,res) => {
 
       const isMatch = await bcrypt.compare(password , user.password);
       if(!isMatch) {
-        return res.status(401).json({message: "Inavalid email or password"})
+        return res.status(401).json({message: "Invalid email or password"})
       } 
 
       res.json({
@@ -123,6 +141,7 @@ const updateUserProfile = async(req,res) => {
         name: updateUser.name,
         email: updateUser.email,
         role: updateUser.role,
+        profileImageUrl: updateUser.profileImageUrl,
         token: generateToken(updateUser._id),
       });
 

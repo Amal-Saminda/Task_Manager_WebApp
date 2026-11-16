@@ -5,9 +5,9 @@ import useAuth from '../../../hooks/useAuth';
 // Only "Dashboard" has a page for now. The other tabs are labels only (no UI yet).
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, ready: true },
-  { key: 'manage-tasks', label: 'Manage Tasks', icon: ClipboardCheck, ready: false },
-  { key: 'create-task', label: 'Create Task', icon: PlusSquare, ready: false },
-  { key: 'team-members', label: 'Team Members', icon: Users, ready: false },
+  { key: 'manage-tasks', label: 'Manage Tasks', icon: ClipboardCheck, ready: true },
+  { key: 'create-task', label: 'Create Task', icon: PlusSquare, ready: true },
+  { key: 'team-members', label: 'Team Members', icon: Users, ready: true },
 ];
 
 function Avatar({ name, src }) {

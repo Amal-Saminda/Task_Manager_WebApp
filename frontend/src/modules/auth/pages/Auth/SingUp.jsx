@@ -71,13 +71,12 @@ export default function SingUp() {
         />
 
         <FormInput
-          label="Admin invite token"
+          label="Admin invite token (optional)"
           name="inviteToken"
           icon={KeyRound}
-          required
           autoComplete="off"
           placeholder="Enter your invite token"
-          hint="Provided by your workspace admin"
+          hint="Leave empty to sign up as a normal user"
           value={values.inviteToken}
           onChange={handleChange}
           error={errors.inviteToken}

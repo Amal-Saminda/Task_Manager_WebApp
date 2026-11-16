@@ -1,6 +1,7 @@
 import { createContext, useCallback, useMemo, useState } from 'react';
 import authService from '../modules/auth/services/authService';
 import {TOKEN_KEY}  from '../shared/api/axiosInstance';
+import { normalizeRole } from '../routes/paths';
 
 export const AuthContext = createContext(null);
 
@@ -22,7 +23,7 @@ const saveSession = useCallback((data) => {
     _id: data._id,
     name: data.name,
     email: data.email,
-    role: data.role,
+    role: normalizeRole(data.role), // backend 'member' -> 'user'
     profileImageUrl: data.profileImageUrl,
   };
 
@@ -47,7 +48,7 @@ const saveSession = useCallback((data) => {
   const register = useCallback(
     async (payload) => {
       const data = await authService.register(payload);
-      if (data?.accessToken && data?.user) saveSession(data);
+      if (data?.token) saveSession(data);
       return data;
     },
     [saveSession]

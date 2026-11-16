@@ -1,26 +1,39 @@
-  import axiosInstance from '../../../shared/api/axiosInstance';
+import axiosInstance from '../../../shared/api/axiosInstance';
+import { API_PATHS } from '../../../shared/api/apipaths';
 
-  const authService = {
-    // POST /auth/login  { email, password }
-    // -> { accessToken, user: { id, fullName, email, role, profileImageUrl } }
-    login: async ({ email, password }) => {
-      const { data } = await axiosInstance.post('/api/auth/login', { email, password });
-      return data;
-    },
+const authService = {
+  // POST /api/auth/login  { email, password }
+  // -> { _id, name, email, role, profileImageUrl, token }
+  login: async ({ email, password }) => {
+    const { data } = await axiosInstance.post(API_PATHS.AUTH.LOGIN, { email, password });
+    return data;
+  },
 
-    // POST /auth/register  (multipart/form-data)
-    // fields: fullName, email, password, inviteToken, profileImage (file)
-    register: async ({ fullName, email, password, inviteToken, profileImage }) => {
-      const formData = new FormData();
-      formData.append('fullName', fullName);
-      formData.append('email', email);
-      formData.append('password', password);
-      formData.append('inviteToken', inviteToken);
-      formData.append('profileImage', profileImage);
+  // Step 1: POST /api/auth/upload-image (multipart, field "image") -> { imageUrl }
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
 
-      const { data } = await axiosInstance.post('/api/auth/register', formData);
-      return data;
-    },
-  };
+    const { data } = await axiosInstance.post(API_PATHS.IMAGE.UPLOAD_IMAGE, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data.imageUrl;
+  },
 
-  export default authService;
+  // Step 2: POST /api/auth/register (JSON) with the uploaded image URL.
+  // adminInviteToken empty -> normal user, correct token -> admin.
+  register: async ({ fullName, email, password, inviteToken, profileImage }) => {
+    const profileImageUrl = profileImage ? await authService.uploadImage(profileImage) : null;
+
+    const { data } = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+      fullName,
+      email,
+      password,
+      profileImageUrl,
+      adminInviteToken: inviteToken || '',
+    });
+    return data;
+  },
+};
+
+export default authService;
