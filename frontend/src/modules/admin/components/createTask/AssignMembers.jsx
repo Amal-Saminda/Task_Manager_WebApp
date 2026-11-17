@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from 'react';
-import {  Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import Avatar from '../Avatar';
 import SelectUserModal from './SelectUserModal';
 import { addButtonClass } from './formStyles';
@@ -8,56 +9,47 @@ import { API_PATHS } from '../../../../shared/api/apipaths';
 
 const MAX_VISIBLE = 3;
 
-// "Add Members" button -> opens the picker. Shows stacked avatars once members are chosen.
-export default function AssignMembers({ members, selectedIds, onChange, hasError }) {
+export default function AssignMembers({
+  selectedIds,
+  onChange,
+  hasError
+}) {
+
   const [open, setOpen] = useState(false);
-  const [allUsers , setAllUsers] = useState([]);
-  const [tempSelectedUsers , setTempSelectedUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
 
-  const selected = members.filter((m) => selectedIds.includes(m.id));
-  const extra = selected.length - MAX_VISIBLE;
-
-  const getAllusers = async () => {
+  const getAllUsers = async () => {
     try {
-        
-      const response  =await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
-      if(response.data?.length>0) {
+      const response = await axiosInstance.get(
+        API_PATHS.USERS.GET_ALL_USERS
+      );
+
+       console.log("All users response:", response.data);
         setAllUsers(response.data);
-      }
-      
+
+      setAllUsers(
+        Array.isArray(response.data)
+          ? response.data
+          : response.data.users || []
+      );
+
     } catch (error) {
-      console.log("Error fetching users", error);
-      
+      console.error(
+        "Error fetching users:",
+        error.response?.data || error.message
+      );
     }
   };
 
-  const toggleUserSelection = (userId) => {
-    setTempSelectedUsers((prev) => 
-    prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev , userId]
-  );
-  };
-
-  const handleAssign = () => {
-    selectedIds(tempSelectedUsers);
-    setOpen(false);
-  };
-
-  // const selectedUserAvatars = allUsers
-  // .filter((user) => selectedIds.includes(user._id))
-  // .map((user) => user.profileImageUrl);
-
   useEffect(() => {
-    getAllusers
+    getAllUsers();
   }, []);
 
-  useEffect(() => {
-    if(selectedIds.length === 0) {
-      setTempSelectedUsers ([]);
-    }
+  const selectedUsers = allUsers.filter((user) =>
+    selectedIds.includes(user._id)
+  );
 
-    return () => {};
-
-  }, [selectedIds]);
+  const extra = selectedUsers.length - MAX_VISIBLE;
 
   return (
     <>
@@ -65,18 +57,27 @@ export default function AssignMembers({ members, selectedIds, onChange, hasError
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Assign members"
-        className={`${addButtonClass} w-full sm:w-auto ${hasError ? 'ring-2 ring-red-300' : ''}`}
+        className={`${addButtonClass} w-full sm:w-auto ${
+          hasError ? 'ring-2 ring-red-300' : ''
+        }`}
       >
-        {selected.length === 0 ? (
+        {selectedUsers.length === 0 ? (
           <>
             <Users className="h-4 w-4" />
             Add Members
           </>
         ) : (
           <span className="flex items-center">
-            {selected.slice(0, MAX_VISIBLE).map((m) => (
-              <Avatar key={m.id} name={m.name} src={m.avatar} size="sm" className="-ml-2 ring-2 ring-white first:ml-0" />
+            {selectedUsers.slice(0, MAX_VISIBLE).map((user) => (
+              <Avatar
+                key={user._id}
+                name={user.name}
+                src={user.profileImageUrl}
+                size="sm"
+                className="-ml-2 ring-2 ring-white first:ml-0"
+              />
             ))}
+
             {extra > 0 && (
               <span className="-ml-2 flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-600 ring-2 ring-white">
                 +{extra}
@@ -88,7 +89,7 @@ export default function AssignMembers({ members, selectedIds, onChange, hasError
 
       {open && (
         <SelectUserModal
-          members={members}
+          members={allUsers}
           selectedIds={selectedIds}
           onClose={() => setOpen(false)}
           onSave={(ids) => {

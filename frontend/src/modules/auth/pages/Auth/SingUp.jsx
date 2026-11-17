@@ -12,7 +12,7 @@ import useSignUp from '../../hooks/useSignUp';
 import { PATHS } from '../../../../routes/paths';
 
 export default function SingUp() {
-  const { values, errors, serverError, loading, handleChange, handleImageChange, handleSubmit } =
+  const { values, errors, serverError, loading, handleChange, handleRoleChange, handleImageChange, handleSubmit } =
     useSignUp();
 
   return (
@@ -70,17 +70,44 @@ export default function SingUp() {
           error={errors.password}
         />
 
-        <FormInput
-          label="Admin invite token (optional)"
-          name="inviteToken"
-          icon={KeyRound}
-          autoComplete="off"
-          placeholder="Enter your invite token"
-          hint="Leave empty to sign up as a normal user"
-          value={values.inviteToken}
-          onChange={handleChange}
-          error={errors.inviteToken}
-        />
+        <fieldset>
+          <legend className="mb-1.5 block text-sm font-medium text-slate-800">Sign up as</legend>
+          <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
+            {[
+              { value: 'member', label: 'Member' },
+              { value: 'admin', label: 'Admin' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                aria-pressed={values.signupAs === opt.value}
+                onClick={() => handleRoleChange(opt.value)}
+                className={`h-9 rounded-lg text-sm font-medium transition ${
+                  values.signupAs === opt.value
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        {values.signupAs === 'admin' && (
+          <FormInput
+            label="Admin invite token"
+            name="inviteToken"
+            icon={KeyRound}
+            required
+            autoComplete="off"
+            placeholder="Enter your invite token"
+            hint="Provided by your workspace admin"
+            value={values.inviteToken}
+            onChange={handleChange}
+            error={errors.inviteToken}
+          />
+        )}
 
         <div className="pt-2">
           <SubmitButton loading={loading} loadingText="Creating account...">

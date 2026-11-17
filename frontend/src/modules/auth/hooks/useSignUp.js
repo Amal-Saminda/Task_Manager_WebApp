@@ -9,6 +9,7 @@ const INITIAL_VALUES = {
   fullName: '',
   email: '',
   password: '',
+  signupAs: 'member', // 'member' | 'admin'
   inviteToken: '',
   profileImage: null,
 };
@@ -29,6 +30,10 @@ export default function useSignUp() {
   };
 
   const handleChange = (e) => setField(e.target.name, e.target.value);
+  const handleRoleChange = (role) => {
+    setField('signupAs', role);
+    if (role === 'member') setField('inviteToken', '');
+  };
   const handleImageChange = (file) => setField('profileImage', file);
 
   const handleSubmit = async (e) => {
@@ -44,7 +49,8 @@ export default function useSignUp() {
         ...values,
         fullName: values.fullName.trim(),
         email: values.email.trim(),
-        inviteToken: values.inviteToken.trim(),
+        // members never send a token; only admin signups do
+        inviteToken: values.signupAs === 'admin' ? values.inviteToken.trim() : '',
       });
 
       // API returned a token -> already signed in. Otherwise go to login.
@@ -60,5 +66,5 @@ export default function useSignUp() {
     }
   };
 
-  return { values, errors, serverError, loading, handleChange, handleImageChange, handleSubmit };
+  return { values, errors, serverError, loading, handleChange, handleRoleChange, handleImageChange, handleSubmit };
 }

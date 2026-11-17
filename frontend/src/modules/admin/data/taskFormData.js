@@ -7,18 +7,12 @@ export const PRIORITY_DATA = [
   { label: 'High', value: 'High' },
 ];
 
-export const TEAM_MEMBERS = [
-  { id: 'm1', name: 'Dustin', email: 'dustin@taskbuddy.com', avatar: '' },
-  { id: 'm2', name: 'Adam', email: 'adam@taskbuddy.com', avatar: '' },
-  { id: 'm3', name: 'Alex', email: 'alex@taskbuddy.com', avatar: '' },
-];
-
 export const INITIAL_TASK = {
   title: '',
   description: '',
   priority: 'Low',
   dueDate: '',
-  assignTo: [], // member ids
-  todoChecklist: [], // strings
+  assignedTo: [], // member ids
+  todoCheckList: [], // strings
   attachments: [], // strings (links)
 };

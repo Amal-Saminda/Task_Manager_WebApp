@@ -5,10 +5,13 @@ import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 import { PATHS, ROLES } from './paths';
 
+
 // TODO: adjust this import to where your user dashboard actually lives
 // import UserDashboard from '../pages/user/UserDashboard';
 
 export default function AppRoutes() {
+  
+  
   return (
     <Routes>
       {/* Public (redirects to dashboard when already logged in) */}
@@ -33,5 +36,10 @@ export default function AppRoutes() {
       <Route path='/' element={<Navigate to={PATHS.LOGIN} replace />} />
       <Route path='*' element={<Navigate to={PATHS.LOGIN} replace />} />
     </Routes>
+
+    
   );
+
+  
 }
+

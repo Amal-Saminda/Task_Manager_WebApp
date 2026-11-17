@@ -24,7 +24,7 @@ export const validateLogin = ({ email, password }) => {
   return errors;
 };
 
-export const validateSignUp = ({ fullName, email, password, inviteToken, profileImage }) => {
+export const validateSignUp = ({ fullName, email, password, inviteToken, signupAs, profileImage }) => {
   const errors = {};
 
   const imageError = validateImage(profileImage);
@@ -41,7 +41,8 @@ export const validateSignUp = ({ fullName, email, password, inviteToken, profile
   else if (!/[A-Za-z]/.test(password) || !/\d/.test(password))
     errors.password = 'Include at least one letter and one number';
 
-  if (!inviteToken.trim()) errors.inviteToken = 'Admin invite token is required';
+  // Token is only needed when registering as Admin; members need none
+  if (signupAs === 'admin' && !inviteToken.trim()) errors.inviteToken = 'Enter the admin invite token';
 
   return errors;
 };
