@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Check } from 'lucide-react';
-import Avatar from '../Avatar';
+import Avatar from '../../../../shared/components/Avatar';
 
 export default function SelectUserModal({
   members,
@@ -21,7 +21,8 @@ export default function SelectUserModal({
   };
 
   return (
-    <div className="rounded-xl bg-white p-5 shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+    <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-lg">
 
       <h3 className="mb-3 text-lg font-semibold">
         Select Team Members
@@ -95,6 +96,7 @@ export default function SelectUserModal({
         </button>
 
       </div>
+    </div>
     </div>
   );
 }

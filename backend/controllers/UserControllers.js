@@ -14,7 +14,7 @@ const users = await User.find({role: "member"}).select("-password");
       //add task counts to each user 
       const userWithTaskCounts = await Promise.all(users.map(async (user) => {
         const pendingTasks = await Task.countDocuments({assignedTo: user._id, status: "Pending"});
-        const inProgressTasks = await Task.countDocuments({assignedTo: user._id, status: "In progress"});
+        const inProgressTasks = await Task.countDocuments({assignedTo: user._id, status: "In Progress"});
         const completedTasks = await Task.countDocuments({assignedTo: user._id, status: "Completed"});
 
         return {
@@ -26,6 +26,57 @@ const users = await User.find({role: "member"}).select("-password");
       }));
 
       res.json(userWithTaskCounts);
+
+  }catch(error) {
+    res.status(500).json({message: "Server Error" , error: error.message});
+  }
+}
+
+//desc create a new team member (Admin only)
+//route post /api/user/
+//access Private (Admin)
+
+const createUser = async (req,res) => {
+  try{
+    const name = String(req.body.name || "").trim();
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const password = req.body.password;
+
+    if(!name || !email || !password){
+      return res.status(400).json({message: "Name, email and password are required"});
+    }
+
+    if(password.length < 8){
+      return res.status(400).json({message: "Password must be at least 8 characters"});
+    }
+
+    const userExists = await User.findOne({email});
+    if(userExists){
+      return res.status(400).json({message: "User already exists"});
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    //admin can only add normal members here
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      profileImageUrl: req.body.profileImageUrl || null,
+      role: "member",
+    });
+
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      profileImageUrl: user.profileImageUrl,
+      pendingTasks: 0,
+      inProgressTasks: 0,
+      completedTasks: 0,
+    });
 
   }catch(error) {
     res.status(500).json({message: "Server Error" , error: error.message});
@@ -48,4 +99,4 @@ const getUserById = async(req,res) =>{
 
 
 
-module.exports = {getUsers , getUserById};
+module.exports = {getUsers , getUserById , createUser};

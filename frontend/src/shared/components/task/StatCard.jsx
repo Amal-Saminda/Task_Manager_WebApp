@@ -3,6 +3,7 @@ const ACCENTS = {
   violet: 'bg-violet-500',
   cyan: 'bg-cyan-500',
   green: 'bg-lime-500',
+  red: 'bg-rose-500',
 };
 
 export default function StatCard({ label, value, accent = 'blue' }) {

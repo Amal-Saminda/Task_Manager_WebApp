@@ -106,7 +106,7 @@ const exportUserReport = async (req, res) => {
 
         user.taskCount += 1;
 
-        if (task.status === "pending") {
+        if (task.status === "Pending") {
           user.pendingTasks += 1;
         } else if (task.status === "In Progress") {
           user.inProgressTasks += 1;

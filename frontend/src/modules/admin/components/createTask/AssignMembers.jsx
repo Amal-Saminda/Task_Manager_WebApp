@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
-import Avatar from '../Avatar';
+import Avatar from '../../../../shared/components/Avatar';
 import SelectUserModal from './SelectUserModal';
 import { addButtonClass } from './formStyles';
 import axiosInstance from '../../../../shared/api/axiosInstance';
@@ -23,9 +23,6 @@ export default function AssignMembers({
       const response = await axiosInstance.get(
         API_PATHS.USERS.GET_ALL_USERS
       );
-
-       console.log("All users response:", response.data);
-        setAllUsers(response.data);
 
       setAllUsers(
         Array.isArray(response.data)

@@ -7,6 +7,8 @@ export const PATHS = {
   ADMIN_TEAM_MEMBERS: '/admin/team-members',
   ADMIN_MANAGE_TASK: '/admin/manage-tasks',
   USER_DASHBOARD: '/user/dashboard',
+  USER_MY_TASKS: '/user/my-tasks',
+  USER_TASK_DETAILS: '/user/task-details/:id',
 };
 
 export const ROLES = {
@@ -24,3 +26,8 @@ export const getDashboardPath = (role) => {
     ? PATHS.ADMIN_DASHBOARD
     : PATHS.USER_DASHBOARD;
 };
+
+
+// '/user/task-details/:id' -> '/user/task-details/123'
+export const getUserTaskPath = (taskId) =>
+  PATHS.USER_TASK_DETAILS.replace(':id', taskId);

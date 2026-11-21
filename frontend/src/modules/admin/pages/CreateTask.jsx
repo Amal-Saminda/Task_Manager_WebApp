@@ -20,6 +20,8 @@ import { API_PATHS } from '../../../shared/api/apipaths';
 
 import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { getErrorMessage } from '../../../utils/getErrorMessage';
 
 
 const validate = (task) => {
@@ -148,10 +150,7 @@ const [deleting, setDeleting] = useState(false);
       });
 
     } catch (error) {
-      console.error(
-        'Error fetching task details:',
-        error.response?.data || error.message
-      );
+      toast.error(getErrorMessage(error, 'Failed to load task details'));
     } finally {
       setFetching(false);
     }
@@ -190,14 +189,10 @@ const [deleting, setDeleting] = useState(false);
     try {
       const payload = getTaskPayload();
 
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
         API_PATHS.TASKS.CREATE_TASK,
         payload
       );
-
-      console.log('Created Task:', response.data);
-
-      setSuccessMessage('Task created successfully!');
 
       clearData();
 
@@ -205,10 +200,7 @@ const [deleting, setDeleting] = useState(false);
 
     } catch (error) {
 
-      console.error(
-        'Error creating task:',
-        error.response?.data || error.message
-      );
+      toast.error(getErrorMessage(error, 'Failed to create task'));
 
     } finally {
       setLoading(false);
@@ -224,21 +216,16 @@ const [deleting, setDeleting] = useState(false);
     try {
       const payload = getTaskPayload();
 
-      const response = await axiosInstance.put(
+      await axiosInstance.put(
         API_PATHS.TASKS.UPDATE_TASK(taskId),
         payload
       );
-
-      console.log('Updated Task:', response.data);
 
       setSuccessMessage('Task updated successfully!');
 
     } catch (error) {
 
-      console.error(
-        'Error updating task:',
-        error.response?.data || error.message
-      );
+      toast.error(getErrorMessage(error, 'Failed to update task'));
 
     } finally {
       setLoading(false);
@@ -276,25 +263,16 @@ const [deleting, setDeleting] = useState(false);
   setDeleting(true);
 
   try {
-    const response = await axiosInstance.delete(
+    await axiosInstance.delete(
       API_PATHS.TASKS.DELETE_TASK(taskId)
     );
 
-    console.log('Deleted Task:', response.data);
-
-    alert('Task deleted successfully!');
+    toast.success('Task deleted successfully!');
 
     navigate('/admin/manage-tasks');
 
   } catch (error) {
-    console.error(
-      'Error deleting task:',
-      error.response?.data || error.message
-    );
-
-    alert(
-      error.response?.data?.message || 'Failed to delete task.'
-    );
+    toast.error(getErrorMessage(error, 'Failed to delete task.'));
 
   } finally {
     setDeleting(false);
@@ -483,10 +461,12 @@ const [deleting, setDeleting] = useState(false);
 
   {/* Create / Update Button */}
   <div className="sm:ml-auto">
-    <SubmitButton disabled={loading || fetching || deleting}>
-      {loading
-        ? (isEditMode ? 'Updating...' : 'Creating...')
-        : (isEditMode ? 'Update Task' : 'Create Task')}
+    <SubmitButton
+      loading={loading}
+      loadingText={isEditMode ? 'Updating...' : 'Creating...'}
+      disabled={fetching || deleting}
+    >
+      {isEditMode ? 'Update Task' : 'Create Task'}
     </SubmitButton>
   </div>
 

@@ -1,50 +1,9 @@
 // Pure SVG donut chart — no chart library needed.
-import { useState , useEffect } from "react";
-import axiosInstance from "../../../shared/api/axiosInstance";
-import { API_PATHS } from "../../../shared/api/apipaths";
-
-
 
 const RADIUS = 70;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-export default function TaskDistributionChart() {
-
-  const [dashboardData, setDashboardData] = useState([]);
-
-  const getDashboardData = async () => {
-    try {
-      const response = await axiosInstance.get(
-        API_PATHS.TASKS.GET_ALL_TASKS
-      );
-
-      setDashboardData(
-        Array.isArray(response.data)
-          ? response.data
-          : response.data.tasks || []
-      );
-
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
-  useEffect(() => {
-    getDashboardData();
-  }, []);
-
-  // Calculate task counts
-  const pending = dashboardData.filter(
-    (task) => task.status === "pending" || task.status === "Pending"
-  ).length;
-
-  const inProgress = dashboardData.filter(
-    (task) => task.status === "In Progress"
-  ).length;
-
-  const completed = dashboardData.filter(
-    (task) => task.status === "Completed"
-  ).length;
+export default function TaskDistributionChart({ pending = 0, inProgress = 0, completed = 0 }) {
 
   const segments = [
     { label: "Pending", value: pending, color: "#8b5cf6" },
@@ -52,9 +11,7 @@ export default function TaskDistributionChart() {
     { label: "Completed", value: completed, color: "#84cc16" },
   ];
 
-  const total = segments.reduce(
-    (sum, s) => sum + s.value, 0
-  ) || 1;
+  const total = segments.reduce((sum, s) => sum + s.value, 0) || 1;
 
   let offset = 0;
 
@@ -93,20 +50,12 @@ export default function TaskDistributionChart() {
       </svg>
 
       <ul className="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
-
         {segments.map((s) => (
           <li key={s.label} className="flex items-center gap-2">
-
-            <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: s.color }}
-            />
-
+            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: s.color }} />
             {s.label} ({s.value})
-
           </li>
         ))}
-
       </ul>
     </div>
   );

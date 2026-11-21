@@ -78,6 +78,10 @@ const loginUser = async(req,res) => {
       const email = String(req.body.email || "").trim().toLowerCase();
       const {password} = req.body;
 
+      if(!email || !password){
+        return res.status(400).json({message: "Email and password are required"});
+      }
+
       const user = await User.findOne({email});
       if(!user){
         return res.status(401).json({message: "Invalid email or password"});
@@ -127,7 +131,14 @@ const updateUserProfile = async(req,res) => {
       }
 
       user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
+
+      if(req.body.email && req.body.email !== user.email){
+        const emailTaken = await User.findOne({email: req.body.email.trim().toLowerCase()});
+        if(emailTaken){
+          return res.status(400).json({message: "Email already in use"});
+        }
+        user.email = req.body.email;
+      }
 
       if(req.body.password) {
         const salt = await bcrypt.genSalt(10)

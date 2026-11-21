@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BASE_URL } from "./apipaths"
+import { API_PATHS, BASE_URL } from "./apipaths"
 
 export const TOKEN_KEY = 'token';
 
@@ -17,7 +17,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    let storedSession = null;
+    let storedSession;
 
     try {
       storedSession = JSON.parse(
@@ -48,9 +48,14 @@ axiosInstance.interceptors.response.use(
     //Handle common error globally
 
     if(error.response) {
-      if(error.response.status === 401) {
-        //redirect login page
+      const isLoginRequest = error.config?.url === API_PATHS.AUTH.LOGIN;
 
+      //wrong email/password also returns 401, so keep the user on the login form
+      if(error.response.status === 401 && !isLoginRequest) {
+        //clear the old session first, otherwise PublicRoute sends the user straight back
+        localStorage.removeItem(TOKEN_KEY);
+
+        //redirect login page
         window.location.href ="/login";
       }else if(error.response.status === 500){
         console.error("Server error. Please try again later");

@@ -3,12 +3,13 @@ const express = require('express')
 const cors = require('cors')
 const path = require('path')
 const connectDB = require("./config/db");
+const Task = require("./models/Task");
 
 
-const authRoutes = require("../backend/routes/AuthRoutes");
-const userRoutes = require("../backend/routes/userRoutes");
-const taskRoutes = require("../backend/routes/taskRoutes");
-const reportRoutes = require("../backend/routes/reportRoutes");
+const authRoutes = require("./routes/AuthRoutes");
+const userRoutes = require("./routes/UserRoutes");
+const taskRoutes = require("./routes/TaskRoutes");
+const reportRoutes = require("./routes/ReportRoutes");
 
 
 
@@ -25,11 +26,16 @@ app.use(
   })
 );
 
-connectDB();
+//old tasks were saved as "pending" / "completed" -> convert to the current status names
+connectDB().then(async () => {
+  await Task.updateMany({status: "pending"}, {$set: {status: "Pending"}});
+  await Task.updateMany({status: "completed"}, {$set: {status: "Completed"}});
+  await Task.updateMany({status: "in progress"}, {$set: {status: "In Progress"}});
+});
 
 app.use(express.json());
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 app.use("/api/auth", authRoutes);

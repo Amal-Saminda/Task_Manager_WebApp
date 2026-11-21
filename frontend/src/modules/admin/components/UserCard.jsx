@@ -1,13 +1,16 @@
+import Avatar from "../../../shared/components/Avatar";
+
 const UserCard = ({ userInfo }) => {
   return (
     <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-200">
 
       {/* User Profile */}
       <div className="flex items-center gap-3">
-        <img
+        <Avatar
+          name={userInfo?.name}
           src={userInfo?.profileImageUrl}
-          alt={userInfo?.name || "User"}
-          className="w-14 h-14 rounded-full border border-gray-200 object-cover shrink-0"
+          size="lg"
+          className="shrink-0"
         />
 
         <div className="min-w-0">
